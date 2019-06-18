@@ -73,7 +73,7 @@ void jit_avx512_core_gemm_bf16bf16f32_kern::dot_product(const Xmm &dst, const
     if (bfloat16_)
         vdpbf16ps(dst, src1, src2);
     else
-        bf16_emu_->r_vdpbf16ps(make_zmm(dst), make_zmm(src1), make_zmm(src2));
+        ; // bf16_emu_->vdpbf16ps(make_zmm(dst), make_zmm(src1), make_zmm(src2));
 }
 
 // Inner kernel.
@@ -446,7 +446,7 @@ jit_avx512_core_gemm_bf16bf16f32_kern::jit_avx512_core_gemm_bf16bf16f32_kern(
     arg_coffset_c_ = ptr[rsp + (args_offset + 16)];
     arg_coffset_r_ = ptr[rsp + (args_offset + 24)];
 
-    bf16_emu_ = nullptr;
+    // bf16_emu_ = nullptr;
     if (!bfloat16_) {
 
         // Those register will not be used by bf16 emulation since we only use
@@ -458,15 +458,15 @@ jit_avx512_core_gemm_bf16bf16f32_kern::jit_avx512_core_gemm_bf16bf16f32_kern(
 
         zmm_tmp0_ = zmm6;
         zmm_tmp1_ = zmm3;
-        bf16_emu_ = new bf16_emulation_t(this, one_, even_, selector_, scratch_,
-                zmm_tmp0_, zmm_tmp1_);
+        // bf16_emu_ = new bf16_emulation_t(this, one_, even_, selector_, scratch_,
+        //        zmm_tmp0_, zmm_tmp1_);
     }
 
     generate();
 }
 
 jit_avx512_core_gemm_bf16bf16f32_kern::~jit_avx512_core_gemm_bf16bf16f32_kern() {
-    delete bf16_emu_;
+    // delete bf16_emu_;
 }
 
 }

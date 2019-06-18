@@ -38,6 +38,11 @@ class jit_avx512_core_gemv_s8u8s32_kern : jit_generator {
     const int mask_un_ = 0xFFFFFFC0;
     const int size_vec_reg_ = 64; // bytes
 
+    void aligned_label(Xbyak::Label &label, int alignment = 16) {
+        align(alignment);
+        L(label);
+    }
+
     void vnni(Xbyak::Zmm, Xbyak::Zmm, Xbyak::Zmm, Xbyak::Zmm, Xbyak::Zmm, bool,
             int);
     void n_loop_body(int, int, int, int, Xbyak::Reg64, Xbyak::Reg64,
@@ -51,11 +56,11 @@ public:
     jit_avx512_core_gemv_s8u8s32_kern() : jit_generator(nullptr, 16384) {};
 
     // m, n, alpha, a, lda, x, beta, y
-    typedef void (*gemv_s8u8s32_kernel_t)(const dim_t, const dim_t, const
-            float, const int8_t*, const dim_t, const uint8_t*, const float,
+    typedef void (*gemv_s8u8s32_kernel_t)(const gemm_dim_t, const gemm_dim_t, const
+            float, const int8_t*, const gemm_dim_t, const uint8_t*, const float,
             int32_t*);
-    typedef void (*gemv_u8s8s32_kernel_t)(const dim_t, const dim_t, const
-            float, const uint8_t*, const dim_t, const int8_t*, const float,
+    typedef void (*gemv_u8s8s32_kernel_t)(const gemm_dim_t, const gemm_dim_t, const
+            float, const uint8_t*, const gemm_dim_t, const int8_t*, const float,
             int32_t*);
 
     template <typename T>

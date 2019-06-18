@@ -383,8 +383,8 @@ void fill_matrices(const test_params &p,
     if (oa == nullptr && ob == nullptr && oc == nullptr)
         return;
 
-    *oa = (int8_t)(p.igemm_params.zero_oa ? 0 : 4);
-    *ob = (int8_t)(p.igemm_params.zero_ob ? 0 : 3);
+    *oa = (int8_t)(p.igemm_params.zero_oa ? 0 : 0);
+    *ob = (int8_t)(p.igemm_params.zero_ob ? 0 : 0);
 
     if (p.igemm_params.zero_oc) {
         for (int i = 0; i < p.size_oc(); i++) oc[i] = 0;

@@ -41,6 +41,7 @@ namespace cpu {
 typedef enum {
     isa_any,
     sse42,
+    sse41 = sse42,
     avx,
     avx2,
     avx512_common,

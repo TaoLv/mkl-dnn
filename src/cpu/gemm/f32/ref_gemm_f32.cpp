@@ -36,7 +36,7 @@ namespace {
 
 template <typename data_t>
 void copy_A(
-        bool isTransA, int K, const data_t *A, const dim_t lda, data_t *ws) {
+        bool isTransA, int K, const data_t *A, const gemm_dim_t lda, data_t *ws) {
     for (int k = 0; k < K; k++) {
         PRAGMA_OMP_SIMD()
         for (int i = 0; i < unroll_factor<data_t>::m; i++) {
@@ -47,8 +47,8 @@ void copy_A(
 }
 
 template <typename data_t, bool isTransA, bool isTransB>
-void kernel_mxn(int K, const data_t *A, const dim_t lda,
-        const data_t *B, const dim_t ldb, data_t *C, const dim_t ldc,
+void kernel_mxn(int K, const data_t *A, const gemm_dim_t lda,
+        const data_t *B, const gemm_dim_t ldb, data_t *C, const gemm_dim_t ldc,
         const data_t alpha, const data_t beta) {
     data_t c[unroll_factor<data_t>::m * unroll_factor<data_t>::n] =
         { static_cast<data_t>(0.) };
@@ -75,8 +75,8 @@ void kernel_mxn(int K, const data_t *A, const dim_t lda,
 
 template <typename data_t, bool isTransA, bool isTransB>
 void block_ker(const int M, const int N, const int K,
-        const data_t *A, const dim_t lda, const data_t *B, const dim_t ldb,
-        data_t *C, const dim_t ldc, const data_t alpha, const data_t beta,
+        const data_t *A, const gemm_dim_t lda, const data_t *B, const gemm_dim_t ldb,
+        data_t *C, const gemm_dim_t ldc, const data_t alpha, const data_t beta,
         data_t *ws, bool do_copy) {
     int Nu = rnd_dn(N, unroll_factor<data_t>::n);
     int Mu = rnd_dn(M, unroll_factor<data_t>::m);
@@ -128,8 +128,8 @@ void block_ker(const int M, const int N, const int K,
 
 template <typename data_t, bool isTransA, bool isTransB>
 void gemm_ithr(const int M, const int N, const int K, const data_t alpha,
-        const data_t *A, const dim_t lda, const data_t *B, const dim_t ldb,
-        const data_t beta, data_t *C, const dim_t ldc, bool do_copy,
+        const data_t *A, const gemm_dim_t lda, const data_t *B, const gemm_dim_t ldb,
+        const data_t beta, data_t *C, const gemm_dim_t ldc, bool do_copy,
         data_t *ws) {
     constexpr int BM = gemm_traits<data_t, isTransA, isTransB>::BM;
     constexpr int BN = gemm_traits<data_t, isTransA, isTransB>::BN;
@@ -143,12 +143,12 @@ void gemm_ithr(const int M, const int N, const int K, const data_t alpha,
         return;
 
     if ((K <= 0) || (alpha == static_cast<data_t>(0))) {
-        dim_t MN = N * M;
+        gemm_dim_t MN = N * M;
         if (beta == static_cast<data_t>(0.)) {
-            for (dim_t j = 0; j < MN; j++)
+            for (gemm_dim_t j = 0; j < MN; j++)
                 C[j] = static_cast<data_t>(0.);
         } else if (beta != static_cast<data_t>(1.)) {
-            for (dim_t j = 0; j < MN; j++)
+            for (gemm_dim_t j = 0; j < MN; j++)
                 C[j] *= beta;
         }
         return;
@@ -188,7 +188,7 @@ mkldnn_status_t ref_gemm(
     bool isTransA = (*transa_ == 'T' || *transa_ == 't');
     bool isTransB = (*transb_ == 'T' || *transb_ == 't');
     const int M = *M_, N = *N_, K = *K_;
-    const dim_t lda = *lda_, ldb = *ldb_, ldc = *ldc_;
+    const gemm_dim_t lda = *lda_, ldb = *ldb_, ldc = *ldc_;
     const data_t alpha = *alpha_, beta = *beta_;
 
     int max_nthr = mkldnn_in_parallel() ? 1 : mkldnn_get_max_threads();
@@ -252,13 +252,13 @@ mkldnn_status_t ref_gemm(
 
         if (myM > 0 && myN > 0) {
             data_t myBeta, *myC;
-            dim_t ld;
+            gemm_dim_t ld;
             if (ithr_k == 0) {
                 myC = &(C[m_from + n_from * ldc]);
                 myBeta = beta;
                 ld = ldc;
             } else {
-                myC = c_buffers + (dim_t)MB * NB * (cbase + ithr_k - 1);
+                myC = c_buffers + (gemm_dim_t)MB * NB * (cbase + ithr_k - 1);
                 myBeta = 0.0f;
                 ld = MB;
             }
@@ -310,7 +310,7 @@ mkldnn_status_t ref_gemm(
                     &block);
             for (int ik = 1; ik < nthr_k; ++ik) {
                 data_t *myC = c_buffers
-                            + MB * ((dim_t)NB * (cbase + ik - 1) + offset);
+                            + MB * ((gemm_dim_t)NB * (cbase + ik - 1) + offset);
 
                 gemm_utils::sum_two_matrices(myM, block, myC, MB,
                         &C[m_from + (n_from + offset) * ldc], ldc);

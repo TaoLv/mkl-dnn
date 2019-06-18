@@ -87,7 +87,7 @@ private:
         arg_coffset_r_;
 
     // For bfloat16 emulation on avx512 and avx512_vnni ISAs
-    bf16_emulation_t *bf16_emu_;
+    // bf16_emulation_t *bf16_emu_;
     Xbyak::Reg64 scratch_;
     Xbyak::Zmm one_;
     Xbyak::Zmm even_;

@@ -346,8 +346,8 @@ void partition_unit_diff(int ithr, int nthr, int n, int *t_offset,
 // arrays have leading dimensions ld_src and ld_dst, respectively
 template<typename data_t>
 void sum_two_matrices(int m, int n,
-        data_t * __restrict p_src, dim_t ld_src,
-        data_t * __restrict p_dst, dim_t ld_dst) {
+        data_t * __restrict p_src, gemm_dim_t ld_src,
+        data_t * __restrict p_dst, gemm_dim_t ld_dst) {
 
     int i, j;
     for (j = 0; j < n; j++) {
@@ -359,13 +359,13 @@ void sum_two_matrices(int m, int n,
 
 template
 void sum_two_matrices<float>(int m, int n,
-        float * __restrict p_src, dim_t ld_src,
-        float * __restrict p_dst, dim_t ld_dst);
+        float * __restrict p_src, gemm_dim_t ld_src,
+        float * __restrict p_dst, gemm_dim_t ld_dst);
 
 template
 void sum_two_matrices<double>(int m, int n,
-        double * __restrict p_src, dim_t ld_src,
-        double * __restrict p_dst, dim_t ld_dst);
+        double * __restrict p_src, gemm_dim_t ld_src,
+        double * __restrict p_dst, gemm_dim_t ld_dst);
 }
 }
 }

@@ -23,7 +23,7 @@ namespace cpu {
 
 namespace gemm_utils {
 // Alias for any dimension related variable.
-typedef ptrdiff_t dim_t;
+typedef ptrdiff_t gemm_dim_t;
 
 template <typename T, bool isTransA, bool isTransB>
 struct gemm_traits {};
@@ -51,8 +51,8 @@ using unroll_factor = gemm_traits<T, false, false>;
 
 template <typename data_t>
 void sum_two_matrices(int m, int n,
-        data_t * __restrict p_src, dim_t ld_src,
-        data_t * __restrict p_dst, dim_t ld_dst);
+        data_t * __restrict p_src, gemm_dim_t ld_src,
+        data_t * __restrict p_dst, gemm_dim_t ld_dst);
 
 void calc_nthr_nocopy_avx512_common(int m,
         int n, int k, int nthrs, int *nthrs_m, int *nthrs_n, int *nthrs_k,

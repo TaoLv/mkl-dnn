@@ -26,6 +26,7 @@ namespace impl {
 
 using dims_t = mkldnn_dims_t;
 using strides_t = mkldnn_strides_t;
+using gemm_dim_t = int64_t;
 
 /* FIXME: to inference from correspoding types */
 using dim_t = int;
