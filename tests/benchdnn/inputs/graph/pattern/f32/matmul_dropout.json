@@ -121,7 +121,7 @@
           "shape": [],
           "stride": [],
           "layout_type": "strided",
-          "property_type": "host_scalar"
+          "property_type": "undef"
         },
         {
           "id": 4,
@@ -129,7 +129,7 @@
           "shape": [],
           "stride": [],
           "layout_type": "strided",
-          "property_type": "host_scalar"
+          "property_type": "undef"
         },
         {
           "id": 5,
@@ -137,7 +137,7 @@
           "shape": [],
           "stride": [],
           "layout_type": "strided",
-          "property_type": "host_scalar"
+          "property_type": "undef"
         }
       ],
       "outputs": [

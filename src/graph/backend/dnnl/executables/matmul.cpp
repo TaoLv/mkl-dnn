@@ -110,6 +110,25 @@ void matmul_executable_t::execute(const stream &stream,
             sycl_deps = {e};
         }
     }
+    // print the index and if the memory argument is host scalar in args.
+    for (const auto &arg : args) {
+        auto mem = arg.second;
+        bool is_hs = (mem.get_desc().get_format_kind()
+                == dnnl::memory::format_kind::host_scalar);
+        std::cout << "arg index: " << arg.first
+                  << ", is_host_scalar: " << is_hs;
+        if (is_hs) {
+            if (arg.first == 510) { // DNNL_ARG_ATTR_DROPOUT_PROBABILITY (f32)
+                std::cout << ", value=" << mem.get_host_scalar_value<float>();
+            } else if (arg.first == 511 || arg.first == 507) {
+                // seed or offset (s64)
+                std::cout << ", value=" << mem.get_host_scalar_value<int64_t>();
+            }
+        } else {
+            std::cout << ", device_ptr=" << mem.get_data_handle();
+        }
+        std::cout << std::endl;
+    }
     auto e = dnnl::sycl_interop::execute(prim_, stream, args, sycl_deps);
     if (stream.get_engine().get_kind() == engine::kind::cpu) e.wait();
     return e;
